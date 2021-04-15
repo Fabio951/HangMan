@@ -60,6 +60,56 @@ class print_colors:
     def underline(string):
         return f"{print_colors.UNDERLINE}{string}{print_colors.END}"
 
+
+class WordGuess:
+
+    def __init__(self, word_to_guess):
+        self.word_to_guess = list(word_to_guess.upper())
+        self.letters_tried = []
+        self.last_letter = ""
+
+    def add_letter(self, letter):
+        self.letters_tried.append(letter.upper())
+        self.last_letter = letter.upper()
+
+    def __repr__(self):
+        string_to_print = ""
+        for letter in self.word_to_guess:
+            if letter in self.letters_tried:
+                letter = print_colors.green(letter) if letter==self.last_letter else letter
+                string_to_print += letter
+            else:
+                string_to_print += '_'
+
+        if self.last_letter not in self.word_to_guess and len(self.letters_tried)>0:
+            string_to_print = print_colors.red(string_to_print)
+
+        return string_to_print
+
+word = WordGuess('ciao')
+
+print(word)
+
+word.add_letter('i')
+
+print(word)
+
+word.add_letter('F')
+
+print(word)
+
+word.add_letter('a')
+
+print(word)
+word.add_letter('c')
+print(word)
+word.add_letter('h')
+print(word)
+word.add_letter('o')
+
+print(word)
+
+
 a=b
 
 steps = {
@@ -79,11 +129,14 @@ before = ""
 after = ""
 before_line = ""
 
+word_to_guess = "Minion"
+
 clean_screen()
 
 for step, draw in steps.items():
 
     draw_to_print = edit_draw(draw=draw, before=before, after=after, before_line=before_line)
+    draw_with_word = add_word_to_print(draw_to_print, word)
     print(draw_to_print)
     a = input(before_line + "Guess the letter: ")
 
