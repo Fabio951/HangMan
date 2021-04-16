@@ -1,16 +1,28 @@
 from store_steps import *
 from time import sleep
 import sys
+from colorama import Fore, Back, init
 import os
 
 
+init()
+
 def edit_draw(draw, before="", after="", before_line=""):
-    lines = [before]
+    new_lines = [before]
     for line in draw.split("\n"):
         line = before_line + line
-        lines.append(line)
-    lines.append(after)
-    return "\n".join(lines)
+        new_lines.append(line.ljust(20))
+    new_lines.append(after)
+    return "\n".join(new_lines)
+
+
+def add_word_to_print(draw, word):
+    new_lines = []
+    for index, line in enumerate(draw.split("\n")):
+        if index==3:
+            line += '\t\t' + str(word)
+        new_lines.append(line)
+    return "\n".join(new_lines)
 
 
 def clean_screen():
@@ -18,47 +30,18 @@ def clean_screen():
 
 
 class print_colors:
-    PURPLE = '\033[95m'
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'
-
-    @staticmethod
-    def purple(string):
-        return f"{print_colors.PURPLE}{string}{print_colors.END}"
-
-    @staticmethod
-    def blue(string):
-        return f"{print_colors.BLUE}{string}{print_colors.END}"
-
-    @staticmethod
-    def cyan(string):
-        return f"{print_colors.CYAN}{string}{print_colors.END}"
-
-    @staticmethod
-    def green(string):
-        return f"{print_colors.GREEN}{string}{print_colors.END}"
-
-    @staticmethod
-    def yellow(string):
-        return f"{print_colors.YELLOW}{string}{print_colors.END}"
 
     @staticmethod
     def red(string):
-        return f"{print_colors.RED}{string}{print_colors.END}"
+        return Fore.RED + string + Fore.RESET
 
     @staticmethod
-    def bold(string):
-        return f"{print_colors.BOLD}{string}{print_colors.END}"
+    def green(string):
+        return Fore.CYAN + string + Fore.RESET
 
     @staticmethod
-    def underline(string):
-        return f"{print_colors.UNDERLINE}{string}{print_colors.END}"
+    def yellow(string):
+        return Fore.RED + string + Fore.RESET
 
 
 class WordGuess:
@@ -67,10 +50,17 @@ class WordGuess:
         self.word_to_guess = list(word_to_guess.upper())
         self.letters_tried = []
         self.last_letter = ""
+        self.lives = 0
 
     def add_letter(self, letter):
-        self.letters_tried.append(letter.upper())
-        self.last_letter = letter.upper()
+
+        letter = letter.upper()
+
+        if letter not in self.word_to_guess:
+            self.lives += 1
+
+        self.letters_tried.append(letter)
+        self.last_letter = letter
 
     def __repr__(self):
         string_to_print = ""
@@ -86,31 +76,6 @@ class WordGuess:
 
         return string_to_print
 
-word = WordGuess('ciao')
-
-print(word)
-
-word.add_letter('i')
-
-print(word)
-
-word.add_letter('F')
-
-print(word)
-
-word.add_letter('a')
-
-print(word)
-word.add_letter('c')
-print(word)
-word.add_letter('h')
-print(word)
-word.add_letter('o')
-
-print(word)
-
-
-a=b
 
 steps = {
     0: step0,
@@ -129,15 +94,24 @@ before = ""
 after = ""
 before_line = ""
 
-word_to_guess = "Minion"
+word = "Minion"
+
+word_to_guess = WordGuess(word)
 
 clean_screen()
 
-for step, draw in steps.items():
+while True:
 
-    draw_to_print = edit_draw(draw=draw, before=before, after=after, before_line=before_line)
-    draw_with_word = add_word_to_print(draw_to_print, word)
-    print(draw_to_print)
-    a = input(before_line + "Guess the letter: ")
+    draw_lives = steps[word_to_guess.lives]
+    draw_to_print = edit_draw(draw=draw_lives, before=before, after=after, before_line=before_line)
+    draw_with_word = add_word_to_print(draw_to_print, word_to_guess)
+    print(draw_with_word)
+
+    letter_guess = input(before_line + "Guess the letter: ")
+
+    word_to_guess.add_letter(letter_guess)
+
+    if word_to_guess.lives >= len(steps):
+        print(print_colors.red('GAME OVER'))
 
     clean_screen()
