@@ -26,7 +26,9 @@ def choose_word_to_guess():
         r = RandomWords()
         while True:
             word = r.get_random_word()
-            if word.isalpha():
+            if word is None:
+                continue
+            elif word.isalpha():
                 break
 
     word_to_guess = WordGuess(word)
@@ -40,5 +42,5 @@ def ask_for_letter(before_line="\t\t"):
 
 def play_again(before_line="\t\t"):
     do_play_again = input("\n" + before_line + "Do you want to play again? (Y/N) ")
-    do_play_again = 'y' in do_play_again.lower()
+    do_play_again = not 'n' in do_play_again.lower()
     return do_play_again

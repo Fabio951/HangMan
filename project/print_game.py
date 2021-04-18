@@ -1,5 +1,6 @@
 import os
 from store_steps import *
+import numpy as np
 
 from print_colors import PrintColors
 
@@ -55,7 +56,7 @@ def clean_screen():
     os.system("cls" if os.name == "nt" else "printf '\033c'")
 
 
-def print_game(word_to_guess, games, wins, error="", before="\n\n", after="", before_line="\t\t"):
+def print_game(word_to_guess, games, wins, tot_fails, error="", before="\n\n", after="", before_line="\t\t"):
     clean_screen()
 
     draw = steps[word_to_guess.fails]
@@ -70,7 +71,7 @@ def print_game(word_to_guess, games, wins, error="", before="\n\n", after="", be
     if games>0:
         draw = _add_to_line(
             draw,
-            f"Wins: {wins}/{games}",
+            f"Wins: {wins}/{games}\tAverage fails:{np.round(tot_fails/games, 2)}",
             line_add=1,
         )
 
@@ -79,7 +80,7 @@ def print_game(word_to_guess, games, wins, error="", before="\n\n", after="", be
     print(draw)
 
 
-def print_win(word_to_guess, games, wins, before="\n\n", after="", before_line="\t\t"):
+def print_win(word_to_guess, games, wins, tot_fails, before="\n\n", after="", before_line="\t\t"):
     clean_screen()
 
     draw = _change_color_draw(steps[word_to_guess.fails], "green")
@@ -92,7 +93,7 @@ def print_win(word_to_guess, games, wins, before="\n\n", after="", before_line="
     if games>0:
         draw = _add_to_line(
             draw,
-            PrintColors.green(f"Wins: {wins+1}/{games+1}"),
+            PrintColors.green(f"Wins: {wins+1}/{games+1}\tAverage fails:{np.round((tot_fails+word_to_guess.fails)/(games+1), 2)}"),
             line_add=1,
         )
 
@@ -102,7 +103,7 @@ def print_win(word_to_guess, games, wins, before="\n\n", after="", before_line="
     print(before_line + PrintColors.green("You Won!!!"))
 
 
-def print_lose(word_to_guess, games, wins, before_line="\t\t"):
+def print_lose(word_to_guess, games, wins, tot_fails, before_line="\t\t"):
     clean_screen()
     draw = _change_color_draw(GAME_OVER, "red")
     word = "".join(word_to_guess.word_to_guess)
@@ -114,7 +115,7 @@ def print_lose(word_to_guess, games, wins, before_line="\t\t"):
     if games>0:
         draw = _add_to_line(
             draw,
-            PrintColors.red(f"Wins: {wins}/{games+1}"),
+            PrintColors.red(f"Wins: {wins}/{games+1}\tAverage fails:{np.round((tot_fails+word_to_guess.fails)/(games+1), 2)}"),
             line_add=1,
         )
 

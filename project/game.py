@@ -10,11 +10,12 @@ def full_game():
 
     games = 0
     wins = 0
+    tot_fails = 0
     while True:
 
         word_to_guess = choose_word_to_guess()
 
-        win = game(word_to_guess, games, wins)
+        fails = game(word_to_guess, games, wins, tot_fails)
 
         do_again = play_again()
 
@@ -22,15 +23,16 @@ def full_game():
             break
 
         games += 1
-        wins += 1 if win==True else 0
+        wins += 1 if fails<9 else 0
+        tot_fails += fails
 
 
-def game(word_to_guess, games, wins):
+def game(word_to_guess, games, wins, tot_fails):
 
     error = ""
     while True:
 
-        print_game(word_to_guess, error=error, games=games, wins=wins)
+        print_game(word_to_guess, error=error, games=games, wins=wins, tot_fails=tot_fails)
 
         letter_guess = ask_for_letter()
         error = word_to_guess.check_letter_guess(letter_guess)
@@ -41,15 +43,13 @@ def game(word_to_guess, games, wins):
         word_to_guess.add_letter(letter_guess)
 
         if word_to_guess.guessed():
-            print_win(word_to_guess, games=games, wins=wins)
-            win = True
+            print_win(word_to_guess, games=games, wins=wins, tot_fails=tot_fails)
             break
         elif word_to_guess.lose():
-            print_lose(word_to_guess, games=games, wins=wins)
-            win = False
+            print_lose(word_to_guess, games=games, wins=wins, tot_fails=tot_fails)
             break
 
-    return win
+    return word_to_guess.fails
 
 
 if __name__ == "__main__":
