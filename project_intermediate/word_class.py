@@ -1,3 +1,5 @@
+from typing import List
+
 from print_colors import PrintColors
 
 
@@ -5,6 +7,8 @@ class WordGuess:
     """
     A class to handle easier the word to be guessed
     """
+
+    ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def __init__(self, word_to_guess: str):
         """
@@ -15,7 +19,6 @@ class WordGuess:
         self.letters_tried = []
         self.last_letter = ""
         self.fails = 0
-
 
     def check_letter_guess(self, letter: str) -> str:
         """
@@ -45,7 +48,6 @@ class WordGuess:
             # Everything ok
             return ""
 
-
     def add_letter(self, letter: str) -> None:
         """
         Store the letter guessed
@@ -61,7 +63,6 @@ class WordGuess:
         # Store the letter
         self.letters_tried.append(letter)
         self.last_letter = letter
-
 
     def __repr__(self):
         """
@@ -101,8 +102,7 @@ class WordGuess:
 
         return string_to_print
 
-
-    def get_letters_tried(self) -> str:
+    def get_letters_tried(self) -> List[str]:
         """
         Get a string with the letters tried.
         """
@@ -110,9 +110,11 @@ class WordGuess:
         # be represented in green, otherwise in red.
         letters_to_print = [
             PrintColors.green(letter)
-            if letter in self.word_to_guess
+            if letter in set(self.word_to_guess).intersection(set(self.letters_tried))
             else PrintColors.red(letter)
-            for letter in self.letters_tried
+            if letter in self.letters_tried
+            else letter
+            for letter in self.ALPHABET
         ]
         # letters_to_print = []
         # for letter in self.letters_tried:
@@ -120,15 +122,13 @@ class WordGuess:
         #         letters_to_print.append(print_colors.green(letter))
         #     else:
         #         letters_to_print.append(print_colors.red(letter))
-        return ", ".join(letters_to_print)
-
+        return [", ".join(letters_to_print[i * 10 : (i + 1) * 10]) for i in range(3)]
 
     def guessed(self) -> bool:
         """
         Return True if the word has been guessed
         """
         return set(self.word_to_guess).issubset(set(self.letters_tried))
-
 
     def lose(self) -> bool:
         """

@@ -37,7 +37,7 @@ def _change_color_draw(draw: str, color: str) -> str:
     return "\n".join(new_lines)
 
 
-def _add_to_line(draw: str, string: str, line_add: int = 3) -> str:
+def _add_to_line(draw: str, string: str, line_add: int) -> str:
     """
     Append a string to a certain line of the draw.
 
@@ -46,6 +46,8 @@ def _add_to_line(draw: str, string: str, line_add: int = 3) -> str:
     :param line_add: the line where to append the string
     :return: the draw with the string
     """
+    if line_add < 0:
+        line_add = len(draw.split("\n")) + line_add
     new_lines = []
     for index, line in enumerate(draw.split("\n")):
         if index == line_add:
@@ -74,6 +76,12 @@ def _edit_draw(
     return "\n".join(new_lines)
 
 
+def _add_alphabet(draw, letters, start_line):
+    for index, line in enumerate(range(start_line, start_line + 3)):
+        draw = _add_to_line(draw, letters[index], line)
+    return draw
+
+
 steps = {
     0: _adjust_draw(step0),
     1: _adjust_draw(step1),
@@ -100,8 +108,8 @@ def print_game(
     wins: int,
     tot_fails: int,
     error: str = "",
-    before: str = "\n\n",
-    after: str = "",
+    before: int = 3,
+    after: int = 2,
     before_line: str = "\t\t",
 ) -> None:
     """
@@ -112,8 +120,8 @@ def print_game(
     :param wins: the games won
     :param tot_fails: the sum of the fails in the games played
     :param error: error from the checks on the guessed letter
-    :param before: what to append before the draw
-    :param after: what to append after the draw
+    :param before: how many lines to append before the draw
+    :param after: how many lines to append after the draw
     :param before_line: what to append at the beginning of each
         line of the draw
     :return: None
@@ -125,30 +133,39 @@ def print_game(
     # Select the draw
     draw = steps[word_to_guess.fails]
 
+    # Edit the draw to render it better
+    draw = _edit_draw(
+        draw=draw, before="\n" * before, after="\n" * after, before_line=before_line
+    )
+
     # Add some information to the draw
-    draw = _add_to_line(draw, str(word_to_guess), line_add=3)
+    draw = _add_to_line(draw, str(word_to_guess), line_add=3 + before)
     draw = _add_to_line(
         draw,
-        "Letters tried: " + word_to_guess.get_letters_tried(),
-        line_add=6,
+        "Letters tried: ",
+        line_add=6 + before,
     )
-    draw = _add_to_line(draw, PrintColors.red(error), line_add=8)
+    draw = _add_alphabet(draw, word_to_guess.get_letters_tried(), 7 + before)
+    draw = _add_to_line(draw, PrintColors.red(error), line_add=-2)
     if games > 0:
         draw = _add_to_line(
             draw,
             f"Wins: {wins}/{games}\tAverage fails:{np.round(tot_fails/games, 2)}",
-            line_add=1,
+            line_add=0 + before,
         )
-
-    # Edit the draw to render it better
-    draw = _edit_draw(draw=draw, before=before, after=after, before_line=before_line)
 
     # Print the draw
     print(draw)
 
 
 def print_win(
-    word_to_guess: WordGuess, games: int, wins: int, tot_fails: int, before: str = "\n\n", after: str = "", before_line: str = "\t\t"
+    word_to_guess: WordGuess,
+    games: int,
+    wins: int,
+    tot_fails: int,
+    before: int = 3,
+    after: int = 2,
+    before_line: str = "\t\t",
 ) -> None:
     """
     Print the win draw.
@@ -157,9 +174,8 @@ def print_win(
     :param games: the games played
     :param wins: the games won
     :param tot_fails: the sum of the fails in the games played
-    :param error: error from the checks on the guessed letter
-    :param before: what to append before the draw
-    :param after: what to append after the draw
+    :param before: how many lines to append before the draw
+    :param after: how many lines to append after the draw
     :param before_line: what to append at the beginning of each
         line of the draw
     :return: None
@@ -171,31 +187,42 @@ def print_win(
     # Change the color of the draw to green
     draw = _change_color_draw(steps[word_to_guess.fails], "green")
 
+    # Edit the draw to render it better
+    draw = _edit_draw(
+        draw=draw, before="\n" * before, after="\n" * after, before_line=before_line
+    )
+
     # Add some information to the draw
-    draw = _add_to_line(draw, PrintColors.green(str(word_to_guess)), line_add=3)
+    draw = _add_to_line(
+        draw, PrintColors.green(str(word_to_guess)), line_add=3 + before
+    )
     draw = _add_to_line(
         draw,
-        "Letters tried: " + word_to_guess.get_letters_tried(),
-        line_add=6,
+        "Letters tried: ",
+        line_add=6 + before,
     )
+    draw = _add_alphabet(draw, word_to_guess.get_letters_tried(), 7 + before)
     if games > 0:
         draw = _add_to_line(
             draw,
             PrintColors.green(
                 f"Wins: {wins+1}/{games+1}\tAverage fails:{np.round((tot_fails+word_to_guess.fails)/(games+1), 2)}"
             ),
-            line_add=1,
+            line_add=0 + before,
         )
-
-    # Edit the draw to render it better
-    draw = _edit_draw(draw=draw, before=before, after=after, before_line=before_line)
 
     # Print the win screen
     print(draw)
     print(before_line + PrintColors.green("You Won!!!"))
 
 
-def print_lose(word_to_guess: WordGuess, games: int, wins: int, tot_fails: int, before_line: str="\t\t") -> None:
+def print_lose(
+    word_to_guess: WordGuess,
+    games: int,
+    wins: int,
+    tot_fails: int,
+    before_line: str = "\t\t",
+) -> None:
     """
     Print the game over draw.
 
@@ -218,8 +245,8 @@ def print_lose(word_to_guess: WordGuess, games: int, wins: int, tot_fails: int, 
     word = "".join(word_to_guess.word_to_guess)
     draw = _add_to_line(
         draw,
-        PrintColors.red(f"The word was: {word}"),
-        line_add=3,
+        PrintColors.red(f" The word was: {word}"),
+        line_add=5,
     )
     if games > 0:
         draw = _add_to_line(
@@ -227,7 +254,7 @@ def print_lose(word_to_guess: WordGuess, games: int, wins: int, tot_fails: int, 
             PrintColors.red(
                 f"Wins: {wins}/{games+1}\tAverage fails:{np.round((tot_fails+word_to_guess.fails)/(games+1), 2)}"
             ),
-            line_add=1,
+            line_add=0,
         )
 
     # Edit the draw to render it better

@@ -89,6 +89,7 @@ __/         \__
 """
 
 GAME_OVER = """
+
    GAME OVER
    
     _____
