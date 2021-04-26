@@ -25,7 +25,7 @@ def choose_word_to_guess() -> WordGuess:
         # Ask for the word
         word = input(ask_word.format(error=error))
 
-        if not word.isalpha() and word != "":
+        if (not word.isalpha() or not word.isascii()) and word != "":
             # If the word contains numbers or special characters, next time print an error
             error = PrintColors.red("You can only input a-z letters, no spaces")
         else:
@@ -44,7 +44,7 @@ def choose_word_to_guess() -> WordGuess:
             word = r.get_random_word()
             if word is None:
                 continue
-            elif word.isalpha():
+            elif word.isalpha() and word.isascii():
                 break
 
     # Wrap the word to guess in a WordGuess class

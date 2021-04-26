@@ -1,38 +1,28 @@
 import numpy as np
-from time import time
+from tqdm import tqdm
+from random_word import RandomWords
 
-from nltk.corpus import words
+from utils import load_vocabulary, guess_word
 
 
-word_guess = "super".upper()
+vocabulary = load_vocabulary("american-english-insane")
 
-LEN_WORD = len(word_guess)
+n_words = 300
+r = RandomWords()
 
-word_list = np.asarray(words.words())
+cumulative_fails = 0
+for _ in tqdm(range(n_words)):
 
-filter_length = np.vectorize(lambda word: len(word) == LEN_WORD)
-upper_words = np.vectorize(lambda word: word.upper())
+    while True:
+        word = r.get_random_word()
+        if word is None: continue
+        if word.isalpha() and word.isascii():
+            break
+    word = word.upper()
 
-list_filtered = upper_words(word_list[filter_length(word_list)])
+    fails = guess_word(word, vocabulary)
+    print(word, " >>> ", fails)
+    cumulative_fails += fails
 
-string_total = list("".join(list_filtered))
-
-letters = [letter for letter, _ in sorted(zip(*np.unique(string_total, return_counts=True)), key=lambda x: -x[1])]
-
-guessed_letters = []
-fails = 0
-
-print(letters)
-for letter in letters:
-    if letter in word_guess:
-        last_guess_letter = letter
-        last_guess_indexes = [index for index, l in enumerate(word_guess) if l==letter]
-        break
-    fails += 1
-
-filter_letter = np.vectorize(lambda word: all([word[index]==last_guess_letter for index in last_guess_indexes]))
-
-filter_words_letter = list_filtered[filter_letter(list_filtered)]
-
-print(len(filter_words_letter))
-print(filter_words_letter)
+print("\n\n\n")
+print("Average_fails: ", np.round(cumulative_fails / n_words, 2))
