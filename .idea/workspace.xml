@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b9c3779c-b0ef-42cf-b1d6-b0bed40648f2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/game_with_solver.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hangman_solver_vocabulary/solver_comparison.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hangman_solver_vocabulary/solver_interaction.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/hangman_solver_vocabulary/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hangman_solver_vocabulary/delete_me.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hangman_solver_vocabulary/solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/hangman_solver_vocabulary/solver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_intermediate/user_interaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_intermediate/user_interaction.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hangman_solver_vocabulary/solver_interaction.py" beforeDir="false" afterPath="$PROJECT_DIR$/hangman_solver_vocabulary/solver_interaction.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
